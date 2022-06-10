@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="Model1" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
+  <EntityContainer Name="Model1Container" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="UserSet" EntityType="Model1.User" />
+    <EntitySet Name="WorkSet" EntityType="Model1.Work" />
+    <EntitySet Name="BuildObjectSet" EntityType="Model1.BuildObject" />
+    <EntitySet Name="EmployeeSet" EntityType="Model1.Employee" />
+    <EntitySet Name="PlanSet" EntityType="Model1.Plan" />
+    <AssociationSet Name="WorkPlan" Association="Model1.WorkPlan">
+      <End Role="Work" EntitySet="WorkSet" />
+      <End Role="Plan" EntitySet="PlanSet" />
+    </AssociationSet>
+    <AssociationSet Name="BuildObjectPlan" Association="Model1.BuildObjectPlan">
+      <End Role="BuildObject" EntitySet="BuildObjectSet" />
+      <End Role="Plan" EntitySet="PlanSet" />
+    </AssociationSet>
+    <AssociationSet Name="WorkEmployee" Association="Model1.WorkEmployee">
+      <End Role="Work" EntitySet="WorkSet" />
+      <End Role="Employee" EntitySet="EmployeeSet" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="User">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" />
+    <Property Name="Surname" Type="String" Nullable="false" />
+    <Property Name="Patronymic" Type="String" Nullable="false" />
+    <Property Name="Login" Type="String" Nullable="false" />
+    <Property Name="Password" Type="String" Nullable="false" />
+    <Property Name="Post" Type="String" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Work">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="WorkName" Type="String" Nullable="false" />
+    <Property Name="Price" Type="Int32" Nullable="false" />
+    <Property Name="Scale" Type="Int32" Nullable="false" />
+    <Property Name="IsDone" Type="Boolean" Nullable="false" />
+    <NavigationProperty Name="Plan" Relationship="Model1.WorkPlan" FromRole="Work" ToRole="Plan" />
+    <Property Name="PlanContractNumber" Type="Int32" Nullable="true" />
+    <NavigationProperty Name="Employee" Relationship="Model1.WorkEmployee" FromRole="Work" ToRole="Employee" />
+    <Property Name="EmployeeId" Type="Int32" Nullable="false" />
+  </EntityType>
+  <EntityType Name="BuildObject">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" />
+    <Property Name="Address" Type="String" Nullable="false" />
+    <Property Name="ContactPerson" Type="String" Nullable="false" />
+    <Property Name="CustomerNumber" Type="String" Nullable="false" />
+    <NavigationProperty Name="Plan" Relationship="Model1.BuildObjectPlan" FromRole="BuildObject" ToRole="Plan" />
+  </EntityType>
+  <EntityType Name="Employee">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" />
+    <Property Name="Surname" Type="String" Nullable="false" />
+    <Property Name="Patronymic" Type="String" Nullable="false" />
+    <Property Name="DateOfBirth" Type="String" Nullable="false" />
+    <Property Name="Classification" Type="String" Nullable="false" />
+    <Property Name="PhoneNumber" Type="String" Nullable="false" />
+    <NavigationProperty Name="Work" Relationship="Model1.WorkEmployee" FromRole="Employee" ToRole="Work" />
+  </EntityType>
+  <EntityType Name="Plan">
+    <Key>
+      <PropertyRef Name="ContractNumber" />
+    </Key>
+    <Property Name="ContractNumber" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="None" />
+    <Property Name="WorkBeginning" Type="String" Nullable="false" />
+    <Property Name="WorkEnding" Type="String" Nullable="false" />
+    <NavigationProperty Name="Work" Relationship="Model1.WorkPlan" FromRole="Plan" ToRole="Work" />
+    <Property Name="EmployeeId" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="BuildObject" Relationship="Model1.BuildObjectPlan" FromRole="Plan" ToRole="BuildObject" />
+  </EntityType>
+  <Association Name="WorkPlan">
+    <End Type="Model1.Work" Role="Work" Multiplicity="*" />
+    <End Type="Model1.Plan" Role="Plan" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Plan">
+        <PropertyRef Name="ContractNumber" />
+      </Principal>
+      <Dependent Role="Work">
+        <PropertyRef Name="PlanContractNumber" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="BuildObjectPlan">
+    <End Type="Model1.BuildObject" Role="BuildObject" Multiplicity="0..1" />
+    <End Type="Model1.Plan" Role="Plan" Multiplicity="0..1" />
+  </Association>
+  <Association Name="WorkEmployee">
+    <End Type="Model1.Work" Role="Work" Multiplicity="*" />
+    <End Type="Model1.Employee" Role="Employee" Multiplicity="1" />
+    <ReferentialConstraint>
+      <Principal Role="Employee">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Work">
+        <PropertyRef Name="EmployeeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

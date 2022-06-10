@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Model1.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="Model1StoreContainer">
+    <EntitySet Name="UserSet" EntityType="Model1.Store.UserSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="WorkSet" EntityType="Model1.Store.WorkSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="BuildObjectSet" EntityType="Model1.Store.BuildObjectSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="EmployeeSet" EntityType="Model1.Store.EmployeeSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="PlanSet" EntityType="Model1.Store.PlanSet" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="WorkPlan" Association="Model1.Store.WorkPlan">
+      <End Role="Work" EntitySet="WorkSet" />
+      <End Role="Plan" EntitySet="PlanSet" />
+    </AssociationSet>
+    <AssociationSet Name="BuildObjectPlan" Association="Model1.Store.BuildObjectPlan">
+      <End Role="BuildObject" EntitySet="BuildObjectSet" />
+      <End Role="Plan" EntitySet="PlanSet" />
+    </AssociationSet>
+    <AssociationSet Name="WorkEmployee" Association="Model1.Store.WorkEmployee">
+      <End Role="Work" EntitySet="WorkSet" />
+      <End Role="Employee" EntitySet="EmployeeSet" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="UserSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Surname" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Patronymic" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Login" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Password" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Post" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="WorkSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="WorkName" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Price" Type="int" Nullable="false" />
+    <Property Name="Scale" Type="int" Nullable="false" />
+    <Property Name="IsDone" Type="bit" Nullable="false" />
+    <Property Name="PlanContractNumber" Type="int" Nullable="true" />
+    <Property Name="EmployeeId" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="BuildObjectSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Address" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="ContactPerson" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="CustomerNumber" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="EmployeeSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Surname" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Patronymic" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="DateOfBirth" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Classification" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="PhoneNumber" Type="nvarchar(max)" Nullable="false" />
+  </EntityType>
+  <EntityType Name="PlanSet">
+    <Key>
+      <PropertyRef Name="ContractNumber" />
+    </Key>
+    <Property Name="ContractNumber" Type="int" Nullable="false" />
+    <Property Name="WorkBeginning" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="WorkEnding" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="EmployeeId" Type="int" Nullable="false" />
+    <Property Name="BuildObject_Id" Type="int" Nullable="true" />
+  </EntityType>
+  <Association Name="WorkPlan">
+    <End Role="Work" Type="Model1.Store.WorkSet" Multiplicity="*" />
+    <End Role="Plan" Type="Model1.Store.PlanSet" Multiplicity="0..1" />
+    <ReferentialConstraint>
+      <Principal Role="Plan">
+        <PropertyRef Name="ContractNumber" />
+      </Principal>
+      <Dependent Role="Work">
+        <PropertyRef Name="PlanContractNumber" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="BuildObjectPlan">
+    <End Role="BuildObject" Type="Model1.Store.BuildObjectSet" Multiplicity="0..1" />
+    <End Role="Plan" Type="Model1.Store.PlanSet" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="BuildObject">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Plan">
+        <PropertyRef Name="BuildObject_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="WorkEmployee">
+    <End Role="Work" Type="Model1.Store.WorkSet" Multiplicity="*" />
+    <End Role="Employee" Type="Model1.Store.EmployeeSet" Multiplicity="1" />
+    <ReferentialConstraint>
+      <Principal Role="Employee">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="Work">
+        <PropertyRef Name="EmployeeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>
