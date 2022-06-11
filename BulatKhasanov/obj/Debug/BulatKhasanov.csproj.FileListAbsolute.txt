@@ -23,3 +23,6 @@ D:\3 курс 2 семестр\MONEY\BulatKhasanov\BulatKhasanov\bin\Debug\ru\En
 D:\3 курс 2 семестр\MONEY\BulatKhasanov\BulatKhasanov\obj\Debug\BulatKhasanov.csproj.CopyComplete
 D:\3 курс 2 семестр\MONEY\BulatKhasanov\BulatKhasanov\obj\Debug\BulatKhasanov.exe
 D:\3 курс 2 семестр\MONEY\BulatKhasanov\BulatKhasanov\obj\Debug\BulatKhasanov.pdb
+D:\3 курс 2 семестр\MONEY\BulatKhasanov\BulatKhasanov\bin\Debug\Xceed.Document.NET.dll
+D:\3 курс 2 семестр\MONEY\BulatKhasanov\BulatKhasanov\bin\Debug\Xceed.Words.NET.dll
+D:\3 курс 2 семестр\MONEY\BulatKhasanov\BulatKhasanov\bin\Debug\ru\EntityFramework.SqlServer.resources.dll

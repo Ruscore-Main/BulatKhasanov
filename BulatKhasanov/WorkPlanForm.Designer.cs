@@ -77,6 +77,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.textBox12 = new System.Windows.Forms.TextBox();
+            this.button7 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listBox1
@@ -537,11 +538,23 @@
             this.textBox12.Size = new System.Drawing.Size(134, 20);
             this.textBox12.TabIndex = 86;
             // 
+            // button7
+            // 
+            this.button7.Font = new System.Drawing.Font("Comic Sans MS", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.button7.Location = new System.Drawing.Point(1509, 238);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(197, 43);
+            this.button7.TabIndex = 103;
+            this.button7.Text = "Печать";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
             // WorkPlanForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1718, 820);
+            this.Controls.Add(this.button7);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.linkLabel1);
             this.Controls.Add(this.button4);
@@ -652,5 +665,6 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.TextBox textBox12;
+        private System.Windows.Forms.Button button7;
     }
 }

@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Xceed.Document.NET;
+using Xceed.Words.NET;
 
 namespace BulatKhasanov
 {
@@ -21,6 +24,7 @@ namespace BulatKhasanov
         string searchBuildingText = "";
         string searchWorkText = "";
         bool desk = false;
+        public string printContent = "";
         public WorkPlanForm(Model1Container db, Form form, User user)
         {
             InitializeComponent();
@@ -42,6 +46,7 @@ namespace BulatKhasanov
         private void WorkPlanForm_Load(object sender, EventArgs e)
         {
             UpdateLists();
+            button7.Enabled = false;
 
 
             foreach (Employee employee in _db.EmployeeSet)
@@ -128,6 +133,7 @@ namespace BulatKhasanov
                     textBox4.Text = currentBuilding.CustomerNumber;
                     if (currentBuilding.Plan != null)
                     {
+                        button7.Enabled = true;
                         currentPlan = currentBuilding.Plan;
                         textBox5.Text = $"{currentPlan.ContractNumber}";
                         textBox7.Text = $"{currentPlan.ContractNumber}";
@@ -177,6 +183,7 @@ namespace BulatKhasanov
                 currentPlan = listBox3.SelectedItem as Plan;
                 if (currentPlan != null)
                 {
+                    button7.Enabled = true;
                     listBox2.Items.Clear();
                     button2.Enabled = true;
                     button3.Enabled = true;
@@ -214,6 +221,27 @@ namespace BulatKhasanov
             catch { }
         }
 
+        public void ClearFields()
+        {
+            currentPlan = null;
+            currentBuilding = null;
+            textBox1.Text = "";
+            textBox2.Text = "";
+            textBox3.Text = "";
+            textBox4.Text = "";
+            textBox5.Text = "";
+            textBox7.Text = "";
+
+            button2.Enabled = false;
+            button3.Enabled = false;
+            listBox2.Items.Clear();
+
+            textBox9.Text = "";
+
+            textBox10.Text = "";
+            textBox11.Text = "";
+        }
+
         private void button3_Click(object sender, EventArgs e)
         {
             try
@@ -221,6 +249,7 @@ namespace BulatKhasanov
                 _db.PlanSet.Remove(currentPlan);
                 _db.SaveChanges();
                 UpdateLists();
+                ClearFields();
                 MessageBox.Show("Успешно удалено!");
             }
             catch { }
@@ -329,11 +358,95 @@ namespace BulatKhasanov
             {
                 _db.WorkSet.Remove(currentWork);
                 _db.SaveChanges();
+                currentWork = null;
+                textBox12.Text = "";
+                textBox13.Text = "";
+                textBox14.Text = "";
+                textBox8.Text = "";
+                checkBox1.Checked = false;
                 UpdateLists();
                 UpdateWorkList();
                 MessageBox.Show("Успешно удалено!");
             }
             catch { }
+        }
+
+        // ЧАСТЬ ПЕЧАТИ СМЕТЫ
+
+        private DocX outputDoc()
+        {
+            string pathDocument = "otchet.docx";
+            DocX document = DocX.Create(pathDocument);
+            document.MarginLeft = 60.0f;
+            document.MarginRight = 60.0f;
+            document.MarginTop = 60.0f;
+            document.MarginBottom = 60.0f;
+
+
+            Paragraph p1 = document.InsertParagraph("Смета").Bold().Font("Times New Roman").FontSize(16);
+            p1.Alignment = Alignment.center;
+
+            Paragraph p2 = document.InsertParagraph($"По проделанным работам на объекте: {currentBuilding.Name}\n").FontSize(14);
+            p2.Alignment = Alignment.center;
+
+            Table table = document.AddTable(currentPlan.Work.Count() + 1, 6);
+            table.Alignment = Alignment.center;
+            table.Design = TableDesign.TableGrid;
+
+            table.Rows[0].Cells[0].Paragraphs[0].Append("№ п.п.").Font("Times New Roman").FontSize(12).Bold();
+            table.Rows[0].Cells[1].Paragraphs[0].Append("Наименование работ").Font("Times New Roman").FontSize(12).Bold();
+            table.Rows[0].Cells[2].Paragraphs[0].Append("Ед. изм").Font("Times New Roman").FontSize(12).Bold();
+            table.Rows[0].Cells[3].Paragraphs[0].Append("Цена за 1 ед. изм").Font("Times New Roman").FontSize(12).Bold();
+            table.Rows[0].Cells[4].Paragraphs[0].Append("Кол-во ед. изм").Font("Times New Roman").FontSize(12).Bold();
+            table.Rows[0].Cells[5].Paragraphs[0].Append("Цена, руб").Font("Times New Roman").FontSize(12).Bold();
+
+
+            int row = 1;
+            int sum = 0;
+            foreach (Work work in currentPlan.Work)
+            {
+                table.Rows[row].Cells[0].Paragraphs[0].Append($"{row}").Font("Times New Roman").FontSize(12);
+                table.Rows[row].Cells[1].Paragraphs[0].Append(work.WorkName).Font("Times New Roman").FontSize(12);
+                table.Rows[row].Cells[2].Paragraphs[0].Append("м^2").Font("Times New Roman").FontSize(12);
+                table.Rows[row].Cells[3].Paragraphs[0].Append($"{work.Price}").Font("Times New Roman").FontSize(12);
+                table.Rows[row].Cells[4].Paragraphs[0].Append($"{work.Scale}").Font("Times New Roman").FontSize(12);
+                table.Rows[row].Cells[5].Paragraphs[0].Append($"{work.Scale*work.Price}").Font("Times New Roman").FontSize(12);
+                sum += work.Scale * work.Price;
+                row++;
+            }
+
+            table.AutoFit = AutoFit.Contents;
+
+
+            document.InsertParagraph().InsertTableAfterSelf(table);
+
+            Paragraph p3 = document.InsertParagraph($"\nОбщая сумма: {sum}").FontSize(14);
+            p3.Alignment = Alignment.right;
+
+            document.Save();
+
+            return document;
+
+        }
+
+        private void PrintPageHandler(object sender, PrintPageEventArgs e)
+        {
+            e.Graphics.DrawString(printContent, new System.Drawing.Font("Arial", 16), Brushes.Black, 0, 0);
+        }
+
+        private void button7_Click(object sender, EventArgs e) // Печать
+        {
+            DocX docs = outputDoc();
+
+            printContent = docs.Text;
+            PrintDocument printDocument = new PrintDocument();
+            PrintDialog printDialog = new PrintDialog();
+            printDocument.PrintPage += PrintPageHandler;
+            printDialog.Document = printDocument;
+            if (printDialog.ShowDialog() == DialogResult.OK)
+            {
+                printDialog.Document.Print();
+            }
         }
     }
 }
